@@ -4,13 +4,17 @@
 #include <vector>
 using namespace std;
 
-class EnemyCollection{
+class EnemyCollection : public EnemyPlayer{
     private:
         vector<EnemyPlayer> arrOfEnemy;
         int Neff;
     public:
         EnemyCollection(); // default constructor
         int getNeff() const; // mengembalikan jumlah musuh saat ini
+        void addEnemy(EnemyPlayer); // menambah enemy ke vector
+        vector<EnemyPlayer> getEnemyArray(); 
+        void removeEnemy(int);
+        void reset();
 };
 
 #endif

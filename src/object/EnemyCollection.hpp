@@ -15,6 +15,7 @@ class EnemyCollection : public EnemyPlayer{
         vector<EnemyPlayer> getEnemyArray(); 
         void removeEnemy(int);
         void reset();
+        void changeHealth(vector<EnemyPlayer>);
 };
 
 #endif

@@ -10,7 +10,7 @@ class EnemyCollection : public EnemyPlayer{
         int Neff;
     public:
         EnemyCollection(); // default constructor
-        int getNeff() const; // mengembalikan jumlah musuh saat ini
+        int getNeff(); // mengembalikan jumlah musuh saat ini
         void addEnemy(EnemyPlayer); // menambah enemy ke vector
         vector<EnemyPlayer> getEnemyArray(); 
         void removeEnemy(int);

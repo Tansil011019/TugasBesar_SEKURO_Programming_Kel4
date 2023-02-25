@@ -11,9 +11,13 @@ using namespace std;
 //     return sqrt(pow((player.getCoordinate().x - enemy.getCoordinate().x), 2) + pow((player.getCoordinate().y - enemy.getCoordinate().y), 2));
 // }
 
+//g++ main.cpp object/EnemyPlayer.cpp object/ObjectPlayer.cpp object/EnemyCollection.cpp attribute/map/Map.cpp -o a
+
 ObjectPlayer player;
 EnemyCollection arrOfEnemy;
 Map map;
+int ObjectPlayer::killCount = 0;
+vector<EnemyPlayer> enemyInRange;
 
 void playerAction(){
     string choice;
@@ -33,76 +37,85 @@ void playerAction(){
     }
 }
 
+void chooseChoicePlayer();
+
 void move(){
     cout << "Please choose where to head" << endl;
     cout << "Input NORTH/SOUTH/EAST/WEST" << endl;
     playerAction();
 }
 
-void validateChoice(string choice, vector<EnemyPlayer>& addEnemyInRange){
+void validateChoice(string choice){
     if(choice == "MOVE"){
         move();
     }else if(choice == "ATTACK"){
         cout << "This is enemy that you can attack, Please choose one and NUMBER" << endl;
-        for(int i= 0; i< addEnemyInRange.size(); i++){
-            cout << i+1 << " (" << addEnemyInRange[i].getCoordinate().x << "," << addEnemyInRange[i].getCoordinate().y << ")" << endl;
+        for(int i= 0; i< enemyInRange.size(); i++){
+            cout << i+1 << " (" << enemyInRange[i].getCoordinate().x << "," << enemyInRange[i].getCoordinate().y << ")" << endl;
         }
         int choice;
         cout << "Tidak divalidasi lagi; Tolong periksa input" << endl;
         cout << "Please Input Your Choice : ";
         cin >> choice;
-        addEnemyInRange[choice - 1].setHealth(addEnemyInRange[choice - 1].getHealth()-1);
+        cout << "Before Enemy Health : " << enemyInRange[choice - 1].getHealth() << endl;
+        enemyInRange[choice - 1].setHealth(enemyInRange[choice - 1].getHealth()-1);
+        cout << "After Enemy Health : " << enemyInRange[choice - 1].getHealth() << endl;
+        // cout << "Actual Health : " << enemyInRange[choice - 1].getHealth()- 1 << endl;
     }else{
-        chooseChoice(addEnemyInRange);
+        chooseChoicePlayer();
     }
 }
 
-void chooseChoice(vector<EnemyPlayer>& addEnemyInRange){
+void chooseChoicePlayer(){
     cout << "Input Your Choice : ";
     string choice;
     cin >> choice;
-    validateChoice(choice, addEnemyInRange);
+    validateChoice(choice);
 }
 
-void playerHandle(vector<EnemyPlayer>& addEnemyInRange){
-    if(addEnemyInRange.size() == 0){
+void playerHandle(){
+    if(enemyInRange.size() == 0){
         move();
-    }else if(addEnemyInRange.size() > 0){
-        cout << "There is Enemy In Your Attack Range" << endl;
+    }else if(enemyInRange.size() > 0){
         cout << "Choose What To Do" << endl;
         cout << "1. MOVE" << endl;
         cout << "2. ATTACK" << endl;
         cout << "Input MOVE or ATTACK" << endl;
-        chooseChoice(addEnemyInRange);
+        chooseChoicePlayer();
     }
 }
 
-void attackRangeMethod(vector<EnemyPlayer>& addEnemyInRange){
+void attackRangeMethod(){
     cout << "U're in attack range!" << endl;
-    for(int i= 0; i<addEnemyInRange.size(); i++){
-        if(addEnemyInRange[i].getTurn()){
-            cout << "Ure being attack! -1 health" << endl;
-            player.setHealth(player.getHealth() - 1);
-        }
+    for(int i= 0; i<enemyInRange.size(); i++){
+        cout << "Ure being attack! -1 health" << endl;
+        player.setHealth(player.getHealth() - 1);
     }
-    playerHandle(addEnemyInRange);
+    playerHandle();
 }
 
 bool checkDistance(){
     for(int i= 0; i<arrOfEnemy.getNeff(); i++){
-        if(arrOfEnemy.getEnemyArray()[i].getDistanceWithPlayer() <= player.getAttackRange() || arrOfEnemy.getEnemyArray()[i].getDistanceWithPlayer() <= arrOfEnemy.getEnemyArray()[i].getAttackRange()){
+        if(arrOfEnemy.getEnemyArray()[i].getDistanceWithPlayer(player.getCoordinate()) <= player.getAttackRange() || arrOfEnemy.getEnemyArray()[i].getDistanceWithPlayer(player.getCoordinate()) <= arrOfEnemy.getEnemyArray()[i].getAttackRange()){
             return true;
         }
     }
     return false;
 }
 
-void addEnemyInRange(vector<EnemyPlayer>& enemyInRange){
+void addEnemyInRange(){
+    enemyInRange.clear();
+    enemyInRange.shrink_to_fit();
+    cout << "Distance With Player" << endl;
     for(int i= 0; i<arrOfEnemy.getNeff(); i++){
-        if(arrOfEnemy.getEnemyArray()[i].getDistanceWithPlayer() <= player.getAttackRange() || arrOfEnemy.getEnemyArray()[i].getDistanceWithPlayer() <= arrOfEnemy.getEnemyArray()[i].getAttackRange()){
-            arrOfEnemy.getEnemyArray()[i].setTurn(true);
+        cout << arrOfEnemy.getEnemyArray()[i].getDistanceWithPlayer(player.getCoordinate()) << " " << player.getAttackRange() << endl;
+        if(arrOfEnemy.getEnemyArray()[i].getDistanceWithPlayer(player.getCoordinate()) <= player.getAttackRange() || arrOfEnemy.getEnemyArray()[i].getDistanceWithPlayer(player.getCoordinate()) <= arrOfEnemy.getEnemyArray()[i].getAttackRange()){
             enemyInRange.push_back(arrOfEnemy.getEnemyArray()[i]);
         }
+    }
+    cout << "This is Enemy In Attack Range" << endl;
+    for(int i= 0; i< enemyInRange.size(); i++){
+        cout << i+1 << ". " << enemyInRange[i].getCoordinate().x << "," << enemyInRange[i].getCoordinate().y << " Enemy Health : " << enemyInRange[i].getHealth() << endl;
     }
 }
 
@@ -110,6 +123,7 @@ void notification(int tick, bool* messageAdd){
     cout << "Notification" <<endl;
     if(tick == 0){
         cout << "Game Start" << endl;
+        cout << "Enemy has spawned" << endl;
         *messageAdd = false;
     }else if(*messageAdd){
         cout << "Tick : " << tick << endl;
@@ -120,9 +134,9 @@ void notification(int tick, bool* messageAdd){
     }
 }
 
-void copyData(vector<EnemyPlayer> enemyInRange){
+void copyData(){
     for (int i= 0; i<arrOfEnemy.getNeff(); i++){
-        for (int j= 0; j<enemyInRange.size(); i++){
+        for (int j= 0; j<enemyInRange.size(); j++){
             if(enemyInRange[j].getCoordinate().x == arrOfEnemy.getEnemyArray()[i].getCoordinate().x && enemyInRange[j].getCoordinate().y == arrOfEnemy.getEnemyArray()[i].getCoordinate().y){
                 arrOfEnemy.getEnemyArray()[i].setHealth(enemyInRange[j].getHealth());
             }
@@ -130,29 +144,43 @@ void copyData(vector<EnemyPlayer> enemyInRange){
     }
 }
 
+void chooseChoice();
+
 void startGame(){
     bool messageAdd= false;
     int tick= 0;
     while(!player.getStatus()){
-        if(tick % 10 == 0){
+        if(tick % 10 == 0 || tick == 0){
+            // cout << "Im here" << endl;
             EnemyPlayer enemy;
             arrOfEnemy.addEnemy(enemy);
             messageAdd = true;
         }
         notification(tick, &messageAdd);
-        map.printMap();
-        bool inAttackRange= checkDistance();
-        vector<EnemyPlayer> enemyInRange;
-        addEnemyInRange(enemyInRange);
-        if(inAttackRange){
-            attackRangeMethod(enemyInRange);
-        }else{
-            playerHandle(enemyInRange);
+        cout << "Health : " << player.getHealth() << endl;
+        cout << "This is Enemy Coordinate" << endl;
+        for(int i= 0; i< arrOfEnemy.getNeff(); i++){
+            cout << arrOfEnemy.getEnemyArray()[i].getCoordinate().x << "," << arrOfEnemy.getEnemyArray()[i].getCoordinate().y << endl;
         }
-        copyData(enemyInRange);
+        map.printMap(player, arrOfEnemy);
+        cout << endl;
+        bool inAttackRange= checkDistance();
+        addEnemyInRange();
+        if(inAttackRange){
+            attackRangeMethod();
+        }else{
+            playerHandle();
+        }
+        cout << "Current Health : " << player.getHealth() << endl;
+        copyData();
+        // cout << "This is Current Enemy In Attack Range" << endl;
+        // for(int i= 0; i< enemyInRange.size(); i++){
+        //     cout << i+1 << ". " << enemyInRange[i].getCoordinate().x << "," << enemyInRange[i].getCoordinate().y << " Enemy Health : " << enemyInRange[i].getHealth() << endl;
+        // }
         for(int i= 0; i<arrOfEnemy.getNeff(); i++){
             if(arrOfEnemy.getEnemyArray()[i].getHealth() <= 0){
                 arrOfEnemy.removeEnemy(i);
+                player.killEnemy();
             }
         }
         tick++;
@@ -178,6 +206,8 @@ void display(){
     cout << "Battle Ship Game" << endl;
     cout << "================" << endl;
 }
+
+void validateChoice();
 
 void chooseChoice(){
     display();

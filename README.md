@@ -36,6 +36,7 @@ Tugas Besar Divisi Programming SEKURO 2023
 #### Not Validated
 - Move player tidak dibatasin, bisa keluar dari map.
 - Pemilihan enemy tidak divalidasi dan apabila salah akan terminated program.
+- Bidang Kartesian yang digunakan terbalik yakni y di atas negatif dan y di bawah positif.
 
 ## How To Run
 ### Run Using Windows Batch File

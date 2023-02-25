@@ -5,13 +5,8 @@
 #include "attribute/map/Map.hpp"
 #include <vector>
 #include <math.h>
+#include <stdlib.h>
 using namespace std;
-
-// double distance(ObjectPlayer player, EnemyPlayer enemy){
-//     return sqrt(pow((player.getCoordinate().x - enemy.getCoordinate().x), 2) + pow((player.getCoordinate().y - enemy.getCoordinate().y), 2));
-// }
-
-//g++ main.cpp object/EnemyPlayer.cpp object/ObjectPlayer.cpp object/EnemyCollection.cpp attribute/map/Map.cpp -o a
 
 ObjectPlayer player;
 EnemyCollection arrOfEnemy;
@@ -60,7 +55,6 @@ void validateChoice(string choice){
         cout << "Before Enemy Health : " << enemyInRange[choice - 1].getHealth() << endl;
         enemyInRange[choice - 1].setHealth(enemyInRange[choice - 1].getHealth()-1);
         cout << "After Enemy Health : " << enemyInRange[choice - 1].getHealth() << endl;
-        // cout << "Actual Health : " << enemyInRange[choice - 1].getHealth()- 1 << endl;
     }else{
         chooseChoicePlayer();
     }
@@ -136,26 +130,6 @@ void notification(int tick, bool* messageAdd){
     }
 }
 
-// void copyData(){
-//     for (int i= 0; i<arrOfEnemy.getNeff(); i++){
-//         for (int j= 0; j<enemyInRange.size(); j++){
-//             if(enemyInRange[j].getCoordinate().x == arrOfEnemy.getEnemyArray()[i].getCoordinate().x && enemyInRange[j].getCoordinate().y == arrOfEnemy.getEnemyArray()[i].getCoordinate().y){
-//                 cout << "Copying" << endl;
-//                 arrOfEnemy.getEnemyArray()[i].setHealth(enemyInRange[j].getHealth());
-//                 cout << enemyInRange[j].getHealth() << " TO " << arrOfEnemy.getEnemyArray()[i].getHealth() << endl;
-//             }
-//         }
-//     }
-//     cout << "This is Current Enemy In Attack Range" << endl;
-//     for(int i= 0; i< enemyInRange.size(); i++){
-//         cout << i+1 << ". " << enemyInRange[i].getCoordinate().x << "," << enemyInRange[i].getCoordinate().y << " Enemy Health : " << enemyInRange[i].getHealth() << endl;
-//     }
-//     cout << "This is Enemy Coordinate" << endl;
-//     for(int i= 0; i< arrOfEnemy.getNeff(); i++){
-//         cout << arrOfEnemy.getEnemyArray()[i].getCoordinate().x << "," << arrOfEnemy.getEnemyArray()[i].getCoordinate().y << " Enemy Health : " << arrOfEnemy.getEnemyArray()[i].getHealth() << endl;
-//     }
-// }
-
 void chooseChoice();
 
 void startGame(){
@@ -192,10 +166,6 @@ void startGame(){
         }
         cout << "Current Health : " << player.getHealth() << endl;
         arrOfEnemy.changeHealth(enemyInRange);
-        // cout << "This is Current Enemy In Attack Range" << endl;
-        // for(int i= 0; i< enemyInRange.size(); i++){
-        //     cout << i+1 << ". " << enemyInRange[i].getCoordinate().x << "," << enemyInRange[i].getCoordinate().y << " Enemy Health : " << enemyInRange[i].getHealth() << endl;
-        // }
         for(int i= 0; i<arrOfEnemy.getNeff(); i++){
             if(arrOfEnemy.getEnemyArray()[i].getHealth() <= 0){
                 arrOfEnemy.removeEnemy(i);
@@ -245,5 +215,6 @@ void validateChoice(){
 }
 
 int main(){
+    system("cls");
     chooseChoice();
 }
